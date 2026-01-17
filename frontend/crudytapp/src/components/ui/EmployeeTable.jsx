@@ -1,0 +1,75 @@
+import React from 'react'
+import { For, HStack, Stack, Table } from "@chakra-ui/react"
+import { FaRegEdit } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
+import { useMutation } from '@tanstack/react-query';
+import { baseUrl } from '../../../constants/global-variable';
+import toast from 'react-hot-toast';
+import {queryClient} from '../../../utils/queryClient.js'
+
+const EmployeeTable = ({data}) => {
+  if(!data.length){
+    return <h1>You don't have any employee data</h1>
+  }
+  const mutation=useMutation({
+    mutationFn: async(id)=>{
+      console.log("MUTATION FUNCTION "+id);
+      const res=await fetch (baseUrl+ "/"+id, {
+        method:"DELETE",
+        headers:{
+          "Content-Type":"application/json"
+        }
+      });
+      const data=await res.json();
+      if(!res.ok){
+        throw new Error(data.error);
+      }
+      return data;
+    },
+    onError:(error)=>{
+      console.log(error.response)
+      toast.error(error.response);
+
+    },
+    onSuccess:()=>{
+      toast.success("Employee data deleted successfully");
+      queryClient.invalidateQueries({queryKey:["employee_details"]});
+    },
+  })
+  return (
+    <Stack gap="10">
+          <Table.Root  size="md" variant={'outline'}>
+            <Table.Header>
+              <Table.Row>
+                <Table.ColumnHeader>ID</Table.ColumnHeader>
+                <Table.ColumnHeader>NAME</Table.ColumnHeader>
+                <Table.ColumnHeader>EMAIL</Table.ColumnHeader>
+                <Table.ColumnHeader>AGE</Table.ColumnHeader>
+                <Table.ColumnHeader>ROLE</Table.ColumnHeader>
+                <Table.ColumnHeader>SALARY</Table.ColumnHeader>
+                <Table.ColumnHeader>ACTIONS</Table.ColumnHeader>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {data.map((item) => (
+                <Table.Row key={item.id}>
+                  <Table.Cell>{item.id}</Table.Cell>
+                  <Table.Cell>{item.name}</Table.Cell>
+                  <Table.Cell>{item.email}</Table.Cell>
+                  <Table.Cell>{item.age}</Table.Cell>
+                  <Table.Cell>{item.role}</Table.Cell>
+                  <Table.Cell>{item.salary}</Table.Cell>
+                  <Table.Cell>
+                    <HStack>
+                    <MdDelete size="20" className="icon" onClick={()=>mutation.mutate(item.id)}/>
+                    <FaRegEdit size="20"className="icon" />
+                    </HStack>
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table.Root>
+    </Stack>
+  )
+}
+export default EmployeeTable

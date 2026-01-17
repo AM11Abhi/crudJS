@@ -1,0 +1,18 @@
+body{
+  min-height: 100vh;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+.icon{
+  fill: hsl(233, 11%,84%);
+  transition: fill 0.2s ease;
+}
+.icon:hover{
+  fill:palevioletred;
+  cursor:pointer;
+  
+}
