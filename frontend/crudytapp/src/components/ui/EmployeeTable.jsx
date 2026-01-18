@@ -6,6 +6,8 @@ import { useMutation } from '@tanstack/react-query';
 import { baseUrl } from '../../../constants/global-variable';
 import toast from 'react-hot-toast';
 import {queryClient} from '../../../utils/queryClient.js'
+import InputEmployee from './InputEmployee.jsx';
+import { Dialog,DialogTrigger,Button } from '@chakra-ui/react';
 
 const EmployeeTable = ({data}) => {
   if(!data.length){
@@ -28,7 +30,7 @@ const EmployeeTable = ({data}) => {
     },
     onError:(error)=>{
       console.log(error.response)
-      toast.error(error.response);
+      toast.error(error.message);
 
     },
     onSuccess:()=>{
@@ -62,7 +64,12 @@ const EmployeeTable = ({data}) => {
                   <Table.Cell>
                     <HStack>
                     <MdDelete size="20" className="icon" onClick={()=>mutation.mutate(item.id)}/>
-                    <FaRegEdit size="20"className="icon" />
+                      <InputEmployee data={item} type="update" >
+                      <DialogTrigger asChild>
+                        <FaRegEdit size="20"className="icon" />
+                      </DialogTrigger>
+                    </InputEmployee>
+                    
                     </HStack>
                   </Table.Cell>
                 </Table.Row>
